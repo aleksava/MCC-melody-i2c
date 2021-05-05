@@ -37,7 +37,7 @@ Copyright (c) [2012-2020] Microchip Technology Inc.
     Main application
 */
 
-
+// Placeholder application variables
 uint8_t count = 0;
 uint16_t count16 = 0;
 uint32_t count32 = 0;
