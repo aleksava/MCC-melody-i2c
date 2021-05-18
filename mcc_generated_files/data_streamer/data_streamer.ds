@@ -1,5 +1,5 @@
 B,1,1,count
-D,1,1,count16
+D,1,1,adcVal
 W,1,1,count32
 F,1,1,count_f
 
