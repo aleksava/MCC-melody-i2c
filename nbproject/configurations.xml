@@ -7,9 +7,6 @@
       <logicalFolder name="MCC Generated Files"
                      displayName="MCC Generated Files"
                      projectFiles="true">
-        <logicalFolder name="adc" displayName="adc" projectFiles="true">
-          <itemPath>mcc_generated_files/adc/adcc.h</itemPath>
-        </logicalFolder>
         <logicalFolder name="data_streamer"
                        displayName="data_streamer"
                        projectFiles="true">
@@ -42,11 +39,6 @@
       <logicalFolder name="MCC Generated Files"
                      displayName="MCC Generated Files"
                      projectFiles="true">
-        <logicalFolder name="adc" displayName="adc" projectFiles="true">
-          <logicalFolder name="src" displayName="src" projectFiles="true">
-            <itemPath>mcc_generated_files/adc/src/adcc.c</itemPath>
-          </logicalFolder>
-        </logicalFolder>
         <logicalFolder name="data_streamer"
                        displayName="data_streamer"
                        projectFiles="true">

@@ -43,17 +43,11 @@ uint16_t count16 = 0;
 uint32_t count32 = 0;
 float count_f = 0.5;
 
-uint16_t volatile adcVal;
-
 void TC_overflow_cb(void){
 
     LED_RE0_Toggle();
     DebugIO_RE2_Toggle();
-
-    ADCC_DischargeSampleCapacitor();
-    adcVal = ADCC_GetSingleConversion(channel_ANA0);
-
-    variableWrite_sendFrame(count, adcVal, count32, count_f);
+    variableWrite_sendFrame(count, count16, count32, count_f);
     count +=5;
     count16 += 1000;
     count32 += 50000000;
@@ -72,7 +66,6 @@ int main(void)
     // Enable the Peripheral Interrupts
     INTERRUPT_PeripheralInterruptEnable();
 
-    
     while(1)
     {
     }    
