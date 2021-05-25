@@ -22,9 +22,11 @@ void variableWrite_sendFrame(uint8_t count, uint16_t adcVal, uint16_t i2cTemp)
 
    EUSART2_Write(count);                // uint8_t
 
-   variableWrite_sendValue((uint8_t *) &adcVal, 2);
+   EUSART2_Write((adcVal >> 0)  & 0xFF); // Low  byte of uint16_t 
+   EUSART2_Write((adcVal >> 8)  & 0xFF); // High byte
 
-   variableWrite_sendValue((uint8_t *) &i2cTemp, 2);
+   EUSART2_Write((i2cTemp >> 0)  & 0xFF); // Low  byte of uint16_t 
+   EUSART2_Write((i2cTemp >> 8)  & 0xFF); // High byte
 
    EUSART2_Write(DATA_STREAMER_END_BYTE);  
 

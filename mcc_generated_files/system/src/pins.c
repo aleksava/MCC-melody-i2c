@@ -111,10 +111,14 @@ void PIN_MANAGER_Initialize(void)
     /**
     PPS registers
     */
-    RX2PPS = 0xF; //RB7->EUSART2:RX2;
+    RX2PPS = 0x19; //RD1->EUSART2:RX2;
     T0CKIPPS = 0x4; //RA4->TMR0:T0CKI;
     ADACTPPS = 0xC; //RB4->ADCC:ADACT;
     RD0PPS = 0xB;  //RD0->EUSART2:TX2;
+    SSP1CLKPPS = 0x9;  //RB1->MSSP1:SSP1CLK;
+    RB1PPS = 0x0F;  //RB1->MSSP1:SSP1CLK;
+    SSP1DATPPS = 0xA;  //RB2->MSSP1:SSP1DAT;
+    RB2PPS = 0x80;  //RB2->MSSP1:SSP1DAT;
 
    /**
     IOCx registers 

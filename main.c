@@ -36,12 +36,15 @@ Copyright (c) [2012-2020] Microchip Technology Inc.
 /*
     Main application
 */
+//uint16_t i2c_read2ByteRegister(i2c1_address_t address, uint8_t reg);
+//I2C Temp sensor: AT30TSE758
+#define I2C_TEMP_SENS_ADDRESS      0x4F      
+#define I2C_TEMPERATURE_REGISTER   0x00
 
-// Placeholder application variables
 uint8_t count = 0;
-uint16_t volatile adcVal = 0;
-uint32_t count32 = 0;
-float count_f = 0.5;
+uint16_t volatile adcVal = 0;  //ADC
+uint16_t volatile i2cTemp = 0; //I2C 
+uint8_t len = 2; //I2C read buffer 
 
 void TC_overflow_cb(void){
 
@@ -51,10 +54,10 @@ void TC_overflow_cb(void){
     ADCC_DischargeSampleCapacitor();
     adcVal = ADCC_GetSingleConversion(channel_ANA0);
 
-    variableWrite_sendFrame(count, adcVal, count32, count_f);
-    count +=5;
-    count32 += 50000000;
-    count_f += 0.2;
+    i2cTemp = i2c_read2ByteRegister(I2C_TEMP_SENS_ADDRESS, I2C_TEMPERATURE_REGISTER);
+ 
+    variableWrite_sendFrame(count++, adcVal, i2cTemp);
+    
 }
 
 int main(void)
@@ -63,6 +66,7 @@ int main(void)
 
     Timer0.TimeoutCallbackRegister(TC_overflow_cb);
 
+    
     // Enable the Global Interrupts
     INTERRUPT_GlobalInterruptEnable();
 

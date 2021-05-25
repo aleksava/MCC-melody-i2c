@@ -15,6 +15,12 @@
                        projectFiles="true">
           <itemPath>mcc_generated_files/data_streamer/data_streamer.h</itemPath>
         </logicalFolder>
+        <logicalFolder name="i2c_host" displayName="i2c_host" projectFiles="true">
+          <itemPath>mcc_generated_files/i2c_host/i2c_host_types.h</itemPath>
+          <itemPath>mcc_generated_files/i2c_host/i2c_simple_host.h</itemPath>
+          <itemPath>mcc_generated_files/i2c_host/mssp1.h</itemPath>
+          <itemPath>mcc_generated_files/i2c_host/i2c_host_interface.h</itemPath>
+        </logicalFolder>
         <logicalFolder name="system" displayName="system" projectFiles="true">
           <itemPath>mcc_generated_files/system/pins.h</itemPath>
           <itemPath>mcc_generated_files/system/interrupt.h</itemPath>
@@ -54,6 +60,15 @@
             <itemPath>mcc_generated_files/data_streamer/src/data_streamer.c</itemPath>
           </logicalFolder>
           <itemPath>mcc_generated_files/data_streamer/data_streamer.ds</itemPath>
+        </logicalFolder>
+        <logicalFolder name="docs" displayName="docs" projectFiles="true">
+          <itemPath>mcc_generated_files/docs/i2c_simple.dox</itemPath>
+        </logicalFolder>
+        <logicalFolder name="i2c_host" displayName="i2c_host" projectFiles="true">
+          <logicalFolder name="src" displayName="src" projectFiles="true">
+            <itemPath>mcc_generated_files/i2c_host/src/mssp1.c</itemPath>
+            <itemPath>mcc_generated_files/i2c_host/src/i2c_simple_host.c</itemPath>
+          </logicalFolder>
         </logicalFolder>
         <logicalFolder name="system" displayName="system" projectFiles="true">
           <logicalFolder name="src" displayName="src" projectFiles="true">
