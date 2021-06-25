@@ -1,24 +1,3 @@
-/**
-  @Generated CCL Source File
-
-  @Company:
-    Microchip Technology Inc.
-
-  @File Name:
-    system.c
-
-  @Summary:
-    This is the system.c file generated using CCL
-
-  @Description:
-    This header file provides implementations for driver APIs for all modules selected in the GUI.
-    Generation Information :
-        Driver Version    :  2.00
-    The generated drivers are tested against the following:
-        Compiler          :  XC8 v2.20
-        MPLAB             :  MPLAB X 5.40
-*/
-
 /*
 Copyright (c) [2012-2020] Microchip Technology Inc.  
 
@@ -53,19 +32,30 @@ Copyright (c) [2012-2020] Microchip Technology Inc.
     such restrictions will not apply to such third party software.
 */
 
- /**
-   Section: Included Files
- */
-#include "../system.h"
+#ifndef AT24CM02_CONFIG_H
+#define AT24CM02_CONFIG_H
+ 
+#ifdef __cplusplus
+extern "C" {
+#endif
+ 
+ 
+#define DEVICE_ID 0xA
+ 
+#define GND 0
+#define VCC 1
+#define DEVICE_ADDRS_BIT GND
+ 
+#define EEPROM_W 0
+#define EEPROM_R 1
+#define RW_OPERATION EEPROM_W
+ 
+#define DEVICE_ADDRS_BYTE ((DEVICE_ID << 4) | (DEVICE_ADDRS_BIT << 3) | (0x0 << 2) | RW_OPERATION)
 
-
-void SYSTEM_Initialize(void)
-{
-    CLOCK_Initialize();
-    PIN_MANAGER_Initialize();
-    EUSART2_Initialize();
-    I2C1_Initialize();
-    Timer0_Initialize();
-    INTERRUPT_Initialize();
+#define PAGESIZE 256
+ 
+#ifdef __cplusplus
 }
-
+#endif
+ 
+#endif /* AT24CM02_CONFIG_H */

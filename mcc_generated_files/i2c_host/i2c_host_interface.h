@@ -1,22 +1,24 @@
 /**
-  @Generated CCL Source File
+  I2C interface Header File
 
-  @Company:
+  @Company
     Microchip Technology Inc.
 
-  @File Name:
-    system.c
+  @File Name
+    i2c_host_interface.h
 
-  @Summary:
-    This is the system.c file generated using CCL
+  @Summary
+    This is the generated driver interface header file for the I2C driver.
 
-  @Description:
-    This header file provides implementations for driver APIs for all modules selected in the GUI.
+  @Description
+    This file provides common enumerations for I2C driver.
     Generation Information :
-        Driver Version    :  2.00
+        Product Revision  :   - 
+        Device            :  
+        Driver Version    :  1.0.0
     The generated drivers are tested against the following:
-        Compiler          :  XC8 v2.20
-        MPLAB             :  MPLAB X 5.40
+        Compiler          :  XC8 v2.30 and above
+        MPLAB             :  MPLABX v5.45 and above
 */
 
 /*
@@ -53,19 +55,33 @@ Copyright (c) [2012-2020] Microchip Technology Inc.
     such restrictions will not apply to such third party software.
 */
 
- /**
-   Section: Included Files
+#ifndef I2C_INTERFACE_H
+#define I2C_INTERFACE_H
+/**
+  Section: Included Files
+*/
+#include <stdbool.h>
+#include <stdint.h>
+#include <xc.h>
+#include "i2c_host_types.h"
+    
+/**
+  I2C_HOST_INTERFACE
+
+  @Description
+    Structure containing the function pointers of I2C driver.
  */
-#include "../system.h"
+struct I2C_HOST_INTERFACE
+{   
+    void (*Initialize)(void);
+    bool (*Write)(uint16_t address, uint8_t *data, size_t dataLength);
+    bool (*Read)(uint16_t address, uint8_t *data, size_t dataLength);
+    bool (*WriteRead)(uint16_t address, uint8_t *writeData, size_t writeLength, uint8_t *readData, size_t readLength);
+    bool (*TransferSetup)(struct I2C_TRANSFER_SETUP* setup, uint32_t srcClkFreq);
+    enum I2C_ERROR (*ErrorGet)(void);
+    bool (*IsBusy)(void);
+    void (*CallbackRegister)(void (*handler)(void));
+};
 
-
-void SYSTEM_Initialize(void)
-{
-    CLOCK_Initialize();
-    PIN_MANAGER_Initialize();
-    EUSART2_Initialize();
-    I2C1_Initialize();
-    Timer0_Initialize();
-    INTERRUPT_Initialize();
-}
+#endif // end of I2C_INTERFACE_H
 

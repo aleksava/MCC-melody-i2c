@@ -17,15 +17,9 @@ static void variableWrite_SendValue(uint8_t* byte_ptr, uint8_t num_bytes)
       }
 }
 
-void variableWrite_SendFrame(uint8_t count, uint16_t count16, uint32_t count32, float count_f)
+void variableWrite_SendFrame(float count_f)
 {
    EUSART2_Write(DATA_STREAMER_START_BYTE);  
-
-   EUSART2_Write(count);                                 // uint8_t
-
-   variableWrite_SendValue((uint8_t *) &count16, 2);         // uint16_t
-
-   variableWrite_SendValue((uint8_t *) &count32, 4);         // uint32_t
 
    variableWrite_SendValue((uint8_t *) &count_f, 4);         // float
 
