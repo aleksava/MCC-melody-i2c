@@ -38,6 +38,7 @@ Copyright (c) [2012-2020] Microchip Technology Inc.
 
 
 void EEPROM_Temp_Read(uint8_t EEPROM_lastRegWritten);
+uint8_t EEPROM_Temp_Write(uint8_t EEPROM_ADDRESS, uint8_t EEPROM_REGISTER_ADDRESS);
 
 /*
     Main application
@@ -58,9 +59,9 @@ uint16_t rawTempLow = 0xFFFF;
 
 
 #define I2C_EEPROM_CLIENT_ADR       0x50
-#define I2C_EEPROM_REG_POINTER      0x00
+#define I2C_EEPROM_REG_POINTER      0xFF
 
-uint8_t EEPROM_lastRegWritten = 1;
+uint8_t EEPROM_lastRegWritten = 0;
 bool    gate_open = true;
 
 #define I2C_GPIO_CLIENT_ADR         0x20
@@ -71,6 +72,7 @@ uint8_t gpio_data = 0xFF;
 
 
 void TC_overflow_cb(void){
+    
     TC_flag++;
     LED_RE0_Toggle();
     DebugIO_RB6_Toggle();
@@ -109,10 +111,9 @@ int main(void)
     while(1)
     {
         /*Note the in 12-bit mode, the update time of the temp sensor is 240ms conversion time*/
-        if(TC_flag % 20 == 0)
+        if(TC_flag % 10 == 0)
         {
             i2c_readDataBlock(I2C_TEMP_CLIENT_ADR,I2C_TEMP_READ_REG, dataRead, 2);
-            //rawTempData = i2c_read2ByteRegister(I2C_TEMPERATURE_CLIENT_ADR,I2C_TEMP_READ_REG);
             /*Calculate the temperature in celcius*/
             rawTempData = (dataRead[0] << 4) + (dataRead[1] >> 4);
             celciusTemp = (float) (rawTempData / 16.0);
@@ -129,7 +130,7 @@ int main(void)
                 rawTempLow = rawTempData; 
             }
             
-            
+            /*Blink the leds on I2C board*/
             dataWrite[0] = I2C_GPIO_PIN_REG;
             dataWrite[1] = gpio_data;
             i2c_writeNBytes(I2C_GPIO_CLIENT_ADR, dataWrite, 2);
@@ -138,37 +139,17 @@ int main(void)
             gate_open = true;
             
         }
-        if(TC_flag >= 200)
+        
+        if(TC_flag >= 100)
         {
             TC_flag = 0;
             EEPROM_Temp_Read(EEPROM_lastRegWritten);
-            
         }
         
         if(!SW0_RE2_GetValue() & gate_open)
         {
             gate_open = false;
-            /*Save temperature data to EEPROM*/
-            EEPROM_lastRegWritten = i2c_read1ByteRegister(I2C_EEPROM_CLIENT_ADR, I2C_EEPROM_REG_POINTER);
-            
-            __delay_ms(100);
-            
-            dataWrite[0] = EEPROM_lastRegWritten;
-            dataWrite[1] = (rawTempLow >> 8);
-            dataWrite[2] = (rawTempLow) & 0x00FF;
-            dataWrite[3] = (rawTempHigh >> 8);
-            dataWrite[4] = (rawTempHigh) & 0x00FF;
-            i2c_writeNBytes(I2C_EEPROM_CLIENT_ADR, dataWrite, 5);
-            __delay_ms(200);
-            printf("\r\n Last eeprom register: %i \t low: %i \t high: %i ",EEPROM_lastRegWritten, rawTempLow, rawTempHigh);
-            EEPROM_lastRegWritten += 4;
-            dataWrite[0] = I2C_EEPROM_REG_POINTER;
-            dataWrite[1] = EEPROM_lastRegWritten;
-            i2c_writeNBytes(I2C_EEPROM_CLIENT_ADR, dataWrite, 2);
-            __delay_ms(200);
-            
-            EEPROM_lastRegWritten = i2c_read1ByteRegister(I2C_EEPROM_CLIENT_ADR, I2C_EEPROM_REG_POINTER);
-            
+            EEPROM_lastRegWritten = EEPROM_Temp_Write(I2C_EEPROM_CLIENT_ADR,EEPROM_lastRegWritten);
             printf("\r\n Last eeprom register: %i ",EEPROM_lastRegWritten);
         }
     }    
@@ -182,7 +163,7 @@ void EEPROM_Temp_Read(uint8_t EEPROM_lastRegWritten){
     printf("\r\n-----------------------------------");
     while(i < (EEPROM_lastRegWritten/block_size))
     {
-        dataWrite[0] = 1 + (i*block_size);
+        dataWrite[0] = i*block_size;
         i2c_writeNBytes(I2C_EEPROM_CLIENT_ADR,dataWrite,1);
         __delay_ms(10);
         i2c_readNBytes(I2C_EEPROM_CLIENT_ADR,dataRead,4);
@@ -193,4 +174,29 @@ void EEPROM_Temp_Read(uint8_t EEPROM_lastRegWritten){
         i++;
     }
     printf("\r\n-----------------------------------");
+}
+
+uint8_t EEPROM_Temp_Write(uint8_t EEPROM_ADDRESS, uint8_t EEPROM_REGISTER_ADDRESS)
+{
+        /*Save temperature data to EEPROM*/
+    EEPROM_lastRegWritten = i2c_read1ByteRegister(I2C_EEPROM_CLIENT_ADR, I2C_EEPROM_REG_POINTER);
+    printf("\r\n Last eeprom register: %i \t low: %i \t high: %i ",EEPROM_lastRegWritten, rawTempLow, rawTempHigh);
+    __delay_ms(50);
+
+    /*In order keep our register pointer at 255 i need to set the limit here. */
+    if (EEPROM_lastRegWritten == 251) EEPROM_lastRegWritten = 0;
+
+    dataWrite[0] = EEPROM_lastRegWritten;
+    dataWrite[1] = ((rawTempLow & 0xFF00) >> 8);
+    dataWrite[2] = (rawTempLow) & 0x00FF;
+    dataWrite[3] = ((rawTempHigh & 0xFF00) >> 8);
+    dataWrite[4] = (rawTempHigh) & 0x00FF;
+    i2c_writeNBytes(I2C_EEPROM_CLIENT_ADR, dataWrite, 5);
+    __delay_ms(50);
+    EEPROM_lastRegWritten += 4;
+    dataWrite[0] = I2C_EEPROM_REG_POINTER;
+    dataWrite[1] = EEPROM_lastRegWritten;
+    i2c_writeNBytes(I2C_EEPROM_CLIENT_ADR, dataWrite, 2);
+    __delay_ms(50);
+    return EEPROM_lastRegWritten;
 }
