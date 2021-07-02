@@ -32,42 +32,110 @@ Copyright (c) [2012-2020] Microchip Technology Inc.
     such restrictions will not apply to such third party software.
 */
 #include "mcc_generated_files/system/system.h"
+#include "mcc_generated_files/i2c_host/i2c_simple_host.h"
+#include "mcc_generated_files/data_streamer/data_streamer.h"
 
-/*
-    Main application
-*/
+#define I2C_MCP9800_ADDRESS             0x49
+#define I2C_MCP9800_TEMP_REG            0x00
+#define I2C_MCP9800_CONFIG_REG          0x01
+#define I2C_MCP9800_CONFIG_DATA         0x60
 
+#define I2C_MCP23008_ADDRESS            0x20
+#define I2C_MCP23008_DIR_REG            0x00
+#define I2C_MCP23008_GPIO_REG           0x09
+#define I2C_MCP23008_DIR_DATA           0x00 
 
-uint8_t count = 0;
-uint16_t count16 = 0;
-uint32_t count32 = 0;
-float count_f = 0.5;
+uint8_t dataRead[2];
+uint8_t dataWrite[4];
+uint16_t tempRaw;
+float tempCelsius = 0.5;
+bool TC_overflow_flag = false;
+
+uint8_t mapTempToGPIO(uint16_t tempRaw);
+void GPIO_init(void);
+void tempSensor_init(void);
 
 void TC_overflow_cb(void){
-
+    TC_overflow_flag = true;
     LED_RE0_Toggle();
     DebugIO_RE2_Toggle();
-    variableWrite_SendFrame( count, count16, count32, count_f);
-    
-    count +=5;
-    count16 += 1000;
-    count32 += 50000000;
-    count_f += 0.2;
 }
 
 int main(void)
 {
     SYSTEM_Initialize();
-
     Timer0.TimeoutCallbackRegister(TC_overflow_cb);
-
     // Enable the Global Interrupts
     INTERRUPT_GlobalInterruptEnable();
-
     // Enable the Peripheral Interrupts
     INTERRUPT_PeripheralInterruptEnable();
+    
+    GPIO_init();
+    tempSensor_init();
 
     while(1)
     {
+        if(TC_overflow_flag)
+        {
+            TC_overflow_flag = false;
+            
+            /* Reading the temp sensor */
+            i2c_readNBytes(I2C_MCP9800_ADDRESS, dataRead, 2);
+            tempRaw = (dataRead[0] << 4) + (dataRead[1] >> 4);
+            
+            /* Displaying the temperature on the GPIO LEDs */
+            dataWrite[0] = I2C_MCP23008_GPIO_REG;
+            dataWrite[1] = mapTempToGPIO(tempRaw);
+            i2c_writeNBytes(I2C_MCP23008_ADDRESS,dataWrite,2);
+            
+            /* Converting the raw temperature to degrees Celsius */
+            tempCelsius = tempRaw / 16.0;
+            variableWrite_SendFrame(tempCelsius);
+        }
     }    
 }
+
+
+void tempSensor_init(void)
+{
+        /* Enabling 12-bit resolution on temperature sensor */
+        dataWrite[0] = I2C_MCP9800_CONFIG_REG;
+        dataWrite[1] = I2C_MCP9800_CONFIG_DATA;
+        i2c_writeNBytes(I2C_MCP9800_ADDRESS,dataWrite,2);
+        __delay_ms(50);
+
+        dataWrite[0] = I2C_MCP9800_TEMP_REG;
+        i2c_writeNBytes(I2C_MCP9800_ADDRESS,dataWrite,1);
+        __delay_ms(50);
+}
+
+void GPIO_init(void)
+{
+    /* Setting GPIO pins as outputs */
+    dataWrite[0] = I2C_MCP23008_DIR_REG;
+    dataWrite[1] = I2C_MCP23008_DIR_DATA;
+    i2c_writeNBytes(I2C_MCP23008_ADDRESS,dataWrite,2);
+    __delay_ms(50);
+}
+
+
+uint8_t mapTempToGPIO(uint16_t tempRaw){
+    uint16_t minTemp = 384; // Degrees Celsius: 384/16 = 24
+    uint8_t resolution = 8;         // 1*C = 16.
+    tempRaw = tempRaw - minTemp;
+    uint8_t i = tempRaw/resolution;
+    if (i > 8) i = 8;
+    switch(i)
+    {
+        case 0: return 0x00;    //24,00 *C
+        case 1: return 0x01;    //24,25 *C
+        case 2: return 0x03;    //24,50 *C
+        case 3: return 0x07;    //24,75 *C
+        case 4: return 0x0F;    //25,00 *C
+        case 5: return 0x1F;    //25,25 *C
+        case 6: return 0x3F;    //25,50 *C
+        case 7: return 0x7F;    //25,75 *C
+        case 8: return 0xFF;    //26,00 *C
+    }
+}
+
