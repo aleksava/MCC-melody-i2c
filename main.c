@@ -50,16 +50,17 @@ float Vdd = 3.3;
 
 int main(void)
 {
+    // Initialize the device
     SYSTEM_Initialize();
-//
+    
     Timer0.TimeoutCallbackRegister(TC_overflow_cb);
-//
-//    // Enable the Global Interrupts
+
+    // Enable the Global Interrupts
     INTERRUPT_GlobalInterruptEnable();
-//
-//    // Enable the Peripheral Interrupts
+
+    // Enable the Peripheral Interrupts
     INTERRUPT_PeripheralInterruptEnable();
-//
+
     while(1)
     {   
         /*Read ADC value*/
