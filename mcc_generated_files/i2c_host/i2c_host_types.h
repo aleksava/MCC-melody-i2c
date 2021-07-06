@@ -1,3 +1,26 @@
+/**
+  I2C Generated Driver API Header File
+
+  @Company
+    Microchip Technology Inc.
+
+  @File Name
+    i2c_host_types.h
+
+  @Summary
+    This is the generated driver types header file for the I2C driver.
+
+  @Description
+    This file provides common enumerations for I2C driver.
+    Generation Information :
+        Product Revision  :   - 
+        Device            :  
+        Driver Version    :  1.0.0
+    The generated drivers are tested against the following:
+        Compiler          :  XC8 v2.30 and above
+        MPLAB             :  MPLABX v5.45 and above
+*/
+
 /*
 Copyright (c) [2012-2020] Microchip Technology Inc.  
 
@@ -31,46 +54,34 @@ Copyright (c) [2012-2020] Microchip Technology Inc.
     third party licenses prohibit any of the restrictions described here, 
     such restrictions will not apply to such third party software.
 */
-#include "mcc_generated_files/system/system.h"
-#include "mcc_generated_files/i2c_host/i2c_simple_host.h"
-#include "mcc_generated_files/data_streamer/data_streamer.h"
 
-#define I2C_SLAVE_ADDR          0x4D
-#define MCP3221_REG_ADDR        0x00
+#ifndef I2C_HOST_TYPES_H
+#define	I2C_HOST_TYPES_H
 
-float ADC_value;
-uint16_t ADC_read;
-float Vdd = 3.3;
-
-void TC_overflow_cb(void){
-    LED_RE0_Toggle();
-    DebugIO_RE2_Toggle();
-}
-
-int main(void)
+/**
+  I2C_ERROR Enumeration
+ 
+  @Description
+    I2C ERROR code
+     
+*/
+enum I2C_ERROR
 {
-    SYSTEM_Initialize();
-//
-    Timer0.TimeoutCallbackRegister(TC_overflow_cb);
-//
-//    // Enable the Global Interrupts
-    INTERRUPT_GlobalInterruptEnable();
-//
-//    // Enable the Peripheral Interrupts
-    INTERRUPT_PeripheralInterruptEnable();
-//
-    while(1)
-    {   
-        /*Read ADC value*/
-        ADC_read = i2c_read2ByteRegister(I2C_SLAVE_ADDR, MCP3221_REG_ADDR);
-        
-        /*Convert value to float*/
-        ADC_value = ADC_read*(Vdd/4096);
-        
-        /*Write to data visualizer*/
-        variableWrite_SendFrame(ADC_value);
-        
-        /*Delay 100ms*/
-        __delay_ms(100);
-    }    
-}
+    I2C_ERROR_NONE,             /* No Error */
+    I2C_ERROR_NACK,             /* Client returned NACK */
+    I2C_ERROR_BUS_COLLISION,    /* Bus Collision Error */
+};
+
+/**
+  I2C_TRANSFER_SETUP structure
+ 
+  @Description
+    I2C Clock Speed (100KHZ to 1MHZ)
+     
+*/
+struct I2C_TRANSFER_SETUP
+{
+  uint32_t clkSpeed;            // I2C Clock Speed
+};
+
+#endif // end of I2C_HOST_TYPES_H

@@ -103,8 +103,8 @@ void EUSART2_Initialize(void)
     // TX9D 0x0; BRGH hi_speed; SENDB sync_break_complete; SYNC asynchronous; TXEN enabled; TX9 8-bit; CSRC client; 
     TX2STA = 0x26;
 
-    // SPBRGL 25; 
-    SP2BRGL = 0x19;
+    // SPBRGL 103; 
+    SP2BRGL = 0x67;
 
     // SPBRGH 0; 
     SP2BRGH = 0x0;

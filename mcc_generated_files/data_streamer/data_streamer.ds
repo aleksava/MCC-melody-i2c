@@ -1,7 +1,4 @@
-B,1,1,count
-D,1,1,count16
-W,1,1,count32
-F,1,1,count_f
+F,1,1,ADC_value
 
 
   

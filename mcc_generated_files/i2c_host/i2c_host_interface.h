@@ -1,3 +1,26 @@
+/**
+  I2C interface Header File
+
+  @Company
+    Microchip Technology Inc.
+
+  @File Name
+    i2c_host_interface.h
+
+  @Summary
+    This is the generated driver interface header file for the I2C driver.
+
+  @Description
+    This file provides common enumerations for I2C driver.
+    Generation Information :
+        Product Revision  :   - 
+        Device            :  
+        Driver Version    :  1.0.0
+    The generated drivers are tested against the following:
+        Compiler          :  XC8 v2.30 and above
+        MPLAB             :  MPLABX v5.45 and above
+*/
+
 /*
 Copyright (c) [2012-2020] Microchip Technology Inc.  
 
@@ -31,46 +54,34 @@ Copyright (c) [2012-2020] Microchip Technology Inc.
     third party licenses prohibit any of the restrictions described here, 
     such restrictions will not apply to such third party software.
 */
-#include "mcc_generated_files/system/system.h"
-#include "mcc_generated_files/i2c_host/i2c_simple_host.h"
-#include "mcc_generated_files/data_streamer/data_streamer.h"
 
-#define I2C_SLAVE_ADDR          0x4D
-#define MCP3221_REG_ADDR        0x00
+#ifndef I2C_INTERFACE_H
+#define I2C_INTERFACE_H
+/**
+  Section: Included Files
+*/
+#include <stdbool.h>
+#include <stdint.h>
+#include <xc.h>
+#include "i2c_host_types.h"
+    
+/**
+  I2C_HOST_INTERFACE
 
-float ADC_value;
-uint16_t ADC_read;
-float Vdd = 3.3;
+  @Description
+    Structure containing the function pointers of I2C driver.
+ */
+struct I2C_HOST_INTERFACE
+{   
+    void (*Initialize)(void);
+    bool (*Write)(uint16_t address, uint8_t *data, size_t dataLength);
+    bool (*Read)(uint16_t address, uint8_t *data, size_t dataLength);
+    bool (*WriteRead)(uint16_t address, uint8_t *writeData, size_t writeLength, uint8_t *readData, size_t readLength);
+    bool (*TransferSetup)(struct I2C_TRANSFER_SETUP* setup, uint32_t srcClkFreq);
+    enum I2C_ERROR (*ErrorGet)(void);
+    bool (*IsBusy)(void);
+    void (*CallbackRegister)(void (*handler)(void));
+};
 
-void TC_overflow_cb(void){
-    LED_RE0_Toggle();
-    DebugIO_RE2_Toggle();
-}
+#endif // end of I2C_INTERFACE_H
 
-int main(void)
-{
-    SYSTEM_Initialize();
-//
-    Timer0.TimeoutCallbackRegister(TC_overflow_cb);
-//
-//    // Enable the Global Interrupts
-    INTERRUPT_GlobalInterruptEnable();
-//
-//    // Enable the Peripheral Interrupts
-    INTERRUPT_PeripheralInterruptEnable();
-//
-    while(1)
-    {   
-        /*Read ADC value*/
-        ADC_read = i2c_read2ByteRegister(I2C_SLAVE_ADDR, MCP3221_REG_ADDR);
-        
-        /*Convert value to float*/
-        ADC_value = ADC_read*(Vdd/4096);
-        
-        /*Write to data visualizer*/
-        variableWrite_SendFrame(ADC_value);
-        
-        /*Delay 100ms*/
-        __delay_ms(100);
-    }    
-}
