@@ -38,14 +38,15 @@ Copyright (c) [2012-2020] Microchip Technology Inc.
 #define I2C_SLAVE_ADDR          0x4D
 #define MCP3221_REG_ADDR        0x00
 
-float ADC_value;
-uint16_t ADC_read;
-float Vdd = 3.3;
 
 void TC_overflow_cb(void){
     LED_RE0_Toggle();
     DebugIO_RE2_Toggle();
 }
+
+float ADC_value;
+uint16_t ADC_read;
+float Vdd = 3.3;
 
 int main(void)
 {
