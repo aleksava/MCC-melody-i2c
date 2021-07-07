@@ -41,7 +41,6 @@ Copyright (c) [2012-2020] Microchip Technology Inc.
 
 
 #define I2C_MCP3221_SLAVE_ADDR              0x4D
-#define MCP3221_REG_ADDR                    0x00
 #define I2C_TC1321_SLAVE_ADDR               0x48
 #define TC1321_REG_ADDR                     0x00
 
@@ -101,5 +100,6 @@ int main(void)
         /*Write data to the DATA register (0x00)*/
         i2c_writeNBytes(I2C_TC1321_SLAVE_ADDR, data_write, 3);
         __delay_ms(10);
+        i2c_write2ByteRegister()
     }    
 }
