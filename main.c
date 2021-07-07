@@ -102,6 +102,5 @@ int main(void)
         /*Write data to the DATA register (0x00)*/
         i2c_writeNBytes(I2C_TC1321_SLAVE_ADDR, data_write, 3);
         __delay_ms(10);
-        i2c_write2ByteRegister()
     }    
 }
