@@ -69,16 +69,20 @@ int main(void)
     uint16_t ADC_read = 0;
     uint16_t ADC_right_shift;
     uint16_t DAC_write;
-    uint8_t data[3];
+    uint8_t data_write[3];
+    uint8_t data_read[2];
     
-    data[0] = TC1321_REG_ADDR;
+    data_write[0] = TC1321_REG_ADDR;
 
     while(1)
     {   
         /*Read data from ADC*/
-        ADC_read = i2c_read2ByteRegister(I2C_MCP3221_SLAVE_ADDR, MCP3221_REG_ADDR);
+//        ADC_read = i2c_read2ByteRegister(I2C_MCP3221_SLAVE_ADDR, MCP3221_REG_ADDR);
+        i2c_readNBytes(I2C_MCP3221_SLAVE_ADDR, data_read, 2);
         __delay_ms(10);
         
+        /*Make one 16-bit value from the 2 bytes read from ADC*/
+        ADC_read = (uint16_t) ((data_read[0] << 8) | (data_read[1] & 0xff));
         /*Right-shift value by 2, to obtain a 10-bit resolution*/
         ADC_right_shift = ADC_read >> 2;
         
@@ -92,11 +96,11 @@ int main(void)
         DAC_write = ADC_right_shift << 6;
         
         /*Split into 2 single bytes*/
-        data[1] = (uint8_t) (DAC_write >> 8);
-        data[2] = (uint8_t) (DAC_write & 0xFF);
+        data_write[1] = (uint8_t) (DAC_write >> 8);
+        data_write[2] = (uint8_t) (DAC_write & 0xFF);
         
         /*Write data to the DATA register (0x00)*/
-        i2c_writeNBytes(I2C_TC1321_SLAVE_ADDR, data, 3);
+        i2c_writeNBytes(I2C_TC1321_SLAVE_ADDR, data_write, 3);
         __delay_ms(10);
     }    
 }
