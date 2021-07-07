@@ -77,7 +77,6 @@ int main(void)
     while(1)
     {   
         /*Read data from ADC*/
-//        ADC_read = i2c_read2ByteRegister(I2C_MCP3221_SLAVE_ADDR, MCP3221_REG_ADDR);
         i2c_readNBytes(I2C_MCP3221_SLAVE_ADDR, data_read, 2);
         __delay_ms(10);
         
