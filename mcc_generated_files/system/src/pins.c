@@ -50,7 +50,7 @@ void PIN_MANAGER_Initialize(void)
     LATx registers
     */
     LATA = 0x0;
-    LATB = 0x0;
+    LATB = 0x6;
     LATC = 0x0;
     LATD = 0x0;
     LATE = 0x0;
@@ -68,7 +68,7 @@ void PIN_MANAGER_Initialize(void)
     ANSELx registers
     */
     ANSELA = 0xFF;
-    ANSELB = 0xFF;
+    ANSELB = 0xF9;
     ANSELC = 0xFF;
     ANSELD = 0xFF;
     ANSELE = 0x2;
@@ -77,7 +77,7 @@ void PIN_MANAGER_Initialize(void)
     WPUx registers
     */
     WPUA = 0x0;
-    WPUB = 0x0;
+    WPUB = 0x6;
     WPUC = 0x0;
     WPUD = 0x0;
     WPUE = 0x0;
@@ -86,7 +86,7 @@ void PIN_MANAGER_Initialize(void)
     ODx registers
     */
     ODCONA = 0x0;
-    ODCONB = 0x0;
+    ODCONB = 0x6;
     ODCONC = 0x0;
     ODCOND = 0x0;
     ODCONE = 0x0;
@@ -114,6 +114,10 @@ void PIN_MANAGER_Initialize(void)
     T0CKIPPS = 0x4; //RA4->TMR0:T0CKI;
     RX2PPS = 0x19; //RD1->EUSART2:RX2;
     RD0PPS = 0x0B;  //RD0->EUSART2:TX2;
+    SSP1CLKPPS = 0x9;  //RB1->MSSP1:SSP1CLK;
+    RB1PPS = 0x0F;  //RB1->MSSP1:SSP1CLK;
+    SSP1DATPPS = 0xA;  //RB2->MSSP1:SSP1DAT;
+    RB2PPS = 0x10;  //RB2->MSSP1:SSP1DAT;
 
    /**
     IOCx registers 

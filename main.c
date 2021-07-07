@@ -32,27 +32,24 @@ Copyright (c) [2012-2020] Microchip Technology Inc.
     such restrictions will not apply to such third party software.
 */
 #include "mcc_generated_files/system/system.h"
+#include "mcc_generated_files/i2c_host/i2c_simple_host.h"
+#include "mcc_generated_files/data_streamer/data_streamer.h"
 
 /*
     Main application
 */
 
 
-uint8_t count = 0;
-uint16_t count16 = 0;
-uint32_t count32 = 0;
-float count_f = 0.5;
+#define I2C_MCP3221_SLAVE_ADDR              0x4D
+#define MCP3221_REG_ADDR                    0x00
+#define I2C_TC1321_SLAVE_ADDR               0x48
+#define TC1321_REG_ADDR                     0x00
+
 
 void TC_overflow_cb(void){
-
+    
     LED_RE0_Toggle();
     DebugIO_RE2_Toggle();
-    variableWrite_SendFrame( count, count16, count32, count_f);
-    
-    count +=5;
-    count16 += 1000;
-    count32 += 50000000;
-    count_f += 0.2;
 }
 
 int main(void)
@@ -66,8 +63,40 @@ int main(void)
 
     // Enable the Peripheral Interrupts
     INTERRUPT_PeripheralInterruptEnable();
+    
+    float DAC_value = 0;
+    float DAC_Vdd = 2.5;
+    uint16_t ADC_read = 0;
+    uint16_t ADC_right_shift;
+    uint16_t DAC_write;
+    uint8_t data[3];
+    
+    data[0] = TC1321_REG_ADDR;
 
     while(1)
-    {
+    {   
+        /*Read data from ADC*/
+        ADC_read = i2c_read2ByteRegister(I2C_MCP3221_SLAVE_ADDR, MCP3221_REG_ADDR);
+        __delay_ms(10);
+        
+        /*Right-shift value by 2, to obtain a 10-bit resolution*/
+        ADC_right_shift = ADC_read >> 2;
+        
+        /*Calculate the voltage output from the DAC*/
+        DAC_value = ADC_right_shift * (DAC_Vdd/1024);
+        /*Send data to variable streamer*/
+        variableWrite_SendFrame(DAC_value);
+        
+        /*Left-shift by 6 - to write the data to the DAC. The datasheet
+         defines how the 10-bit value should be written to the 0x00 register.*/
+        DAC_write = ADC_right_shift << 6;
+        
+        /*Split into 2 single bytes*/
+        data[1] = (uint8_t) (DAC_write >> 8);
+        data[2] = (uint8_t) (DAC_write & 0xFF);
+        
+        /*Write data to the DATA register (0x00)*/
+        i2c_writeNBytes(I2C_TC1321_SLAVE_ADDR, data, 3);
+        __delay_ms(10);
     }    
 }

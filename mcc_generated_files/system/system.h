@@ -63,9 +63,9 @@ Copyright (c) [2012-2020] Microchip Technology Inc.
 #include "../system/clock.h"
 #include "../system/pins.h"
 #include "../uart/eusart2.h"
+#include "../i2c_host/mssp1.h"
 #include "../timer/tmr0.h"
 #include "../system/interrupt.h"
-#include "../data_streamer/data_streamer.h"
 
 /**
  * @Param

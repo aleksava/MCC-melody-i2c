@@ -1,22 +1,24 @@
 /**
-  @Generated CCL Header File
+  I2C Generated Driver API Header File
 
-  @Company:
+  @Company
     Microchip Technology Inc.
 
-  @File Name:
-    clock.h
+  @File Name
+    i2c_host_types.h
 
-  @Summary:
-    This is the clock.h file generated using CCL
+  @Summary
+    This is the generated driver types header file for the I2C driver.
 
-  @Description:
-    This header file provides implementations for driver APIs for all modules selected in the GUI.
+  @Description
+    This file provides common enumerations for I2C driver.
     Generation Information :
-        Driver Version    :  2.00
+        Product Revision  :   - 
+        Device            :  
+        Driver Version    :  1.0.0
     The generated drivers are tested against the following:
-        Compiler          :  XC8 v2.20
-        MPLAB             :  MPLAB X 5.40
+        Compiler          :  XC8 v2.30 and above
+        MPLAB             :  MPLABX v5.45 and above
 */
 
 /*
@@ -53,16 +55,33 @@ Copyright (c) [2012-2020] Microchip Technology Inc.
     such restrictions will not apply to such third party software.
 */
 
-#ifndef CLOCK_H
-#define	CLOCK_H
+#ifndef I2C_HOST_TYPES_H
+#define	I2C_HOST_TYPES_H
 
-#ifndef _XTAL_FREQ
-#define _XTAL_FREQ 4000000
-#endif
-
-void CLOCK_Initialize(void);
-
-#endif	/* CLOCK_H */
 /**
- End of File
+  I2C_ERROR Enumeration
+ 
+  @Description
+    I2C ERROR code
+     
 */
+enum I2C_ERROR
+{
+    I2C_ERROR_NONE,             /* No Error */
+    I2C_ERROR_NACK,             /* Client returned NACK */
+    I2C_ERROR_BUS_COLLISION,    /* Bus Collision Error */
+};
+
+/**
+  I2C_TRANSFER_SETUP structure
+ 
+  @Description
+    I2C Clock Speed (100KHZ to 1MHZ)
+     
+*/
+struct I2C_TRANSFER_SETUP
+{
+  uint32_t clkSpeed;            // I2C Clock Speed
+};
+
+#endif // end of I2C_HOST_TYPES_H

@@ -59,8 +59,8 @@ Copyright (c) [2012-2020] Microchip Technology Inc.
 void CLOCK_Initialize(void)
 {
     // Set the CLOCK CONTROL module to the options selected in the user interface.
-    // NDIV 4; NOSC HFINTOSC; 
-    OSCCON1 = 0x62;
+    // NDIV 1; NOSC HFINTOSC; 
+    OSCCON1 = 0x60;
     // 
     OSCCON2 = 0x70;
     // SOSCPWR Low power; CSWHOLD may proceed; 
