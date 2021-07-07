@@ -77,7 +77,7 @@ int main(void)
     {   
         /*Read data from ADC*/
         i2c_readNBytes(I2C_MCP3221_SLAVE_ADDR, data_read, 2);
-        __delay_ms(10);S
+        __delay_ms(10);
         
         /*Make one 16-bit value from the 2 bytes read from ADC*/
         ADC_read = (uint16_t) ((data_read[0] << 8) | (data_read[1] & 0xff));
