@@ -64,7 +64,7 @@ int main(void)
     INTERRUPT_PeripheralInterruptEnable();
     
     float DAC_value = 0;
-    float DAC_Vdd = 2.5;
+    float DAC_Vref = 2.5;
     uint16_t ADC_read = 0;
     uint16_t ADC_right_shift;
     uint16_t DAC_write;
@@ -76,8 +76,10 @@ int main(void)
     while(1)
     {   
         /*Read data from ADC*/
+        ADC_read = i2c_read2ByteRegister(I2C_MCP3221_SLAVE_ADDR, MCP3221_REG_ADDR);
+        
         i2c_readNBytes(I2C_MCP3221_SLAVE_ADDR, data_read, 2);
-        __delay_ms(10);
+        __delay_ms(10);S
         
         /*Make one 16-bit value from the 2 bytes read from ADC*/
         ADC_read = (uint16_t) ((data_read[0] << 8) | (data_read[1] & 0xff));
@@ -85,7 +87,7 @@ int main(void)
         ADC_right_shift = ADC_read >> 2;
         
         /*Calculate the voltage output from the DAC*/
-        DAC_value = ADC_right_shift * (DAC_Vdd/1024);
+        DAC_value = ADC_right_shift * (DAC_Vref/1024);
         /*Send data to variable streamer*/
         variableWrite_SendFrame(DAC_value);
         
