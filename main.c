@@ -35,8 +35,14 @@ Copyright (c) [2012-2020] Microchip Technology Inc.
 #include "mcc_generated_files/i2c_host/i2c_simple_host.h"
 #include "mcc_generated_files/data_streamer/data_streamer.h"
 
-#define I2C_SLAVE_ADDR          0x4D
+#define I2C_MCP3221_SLAVE_ADDR          0x4D
+#define I2C_MCP23008_SLAVE_ADDR         0x20
+#define MCP23008_REG_ADDR_IODIR         0x00
+#define MCP23008_REG_ADDR_GPIO          0x09
+#define PINS_DIGITAL_OUTPUT             0x00
 
+
+void ADC_to_IOExpander(float ADC_read);
 
 void TC_overflow_cb(void){
     LED_RE0_Toggle();
@@ -63,11 +69,14 @@ int main(void)
     uint8_t data[2];
     float Vdd = 3.3;
     uint16_t resolution = 4096;
+    
+    /* Set the extended pins of I/O expander as digital output */
+    i2c_write1ByteRegister(I2C_MCP23008_SLAVE_ADDR, MCP23008_REG_ADDR_IODIR, PINS_DIGITAL_OUTPUT);
 
     while(1)
     {   
         /*Read data from ADC*/
-        i2c_readNBytes(I2C_SLAVE_ADDR, data, 2);
+        i2c_readNBytes(I2C_MCP3221_SLAVE_ADDR, data, 2);
         
         /*Make one 16-bit value from the 2 bytes read from ADC*/
         ADC_read = (uint16_t) ((data[0] << 8) | (data[1] & 0xff));
@@ -75,10 +84,34 @@ int main(void)
         /*Convert value to float*/
         ADC_value = ADC_read*(Vdd/resolution);
         
+        /*Write to I/O Expander based on potmeter voltage*/
+        ADC_to_IOExpander(ADC_value);
+        
         /*Write to data visualizer*/
         variableWrite_SendFrame(ADC_value);
         
         /*Delay 100ms*/
-        __delay_ms(100);
+        __delay_ms(10);
+        
     }    
 }
+
+/*
+ *Decided how many LEDs should be turned on based on the voltage value of 
+ * the ADC_read variable. Then writes the corresponding value to the I/O expander.
+ */
+void ADC_to_IOExpander(float ADC_value)
+{   
+    uint8_t IO_write;
+    if(ADC_value < 0.4125) {IO_write = 0x01;}
+    else if(ADC_value >= 0.4125 & ADC_value < 0.825) {IO_write = 0x03;}
+    else if(ADC_value >= 0.825 & ADC_value < 1.2375) {IO_write = 0x07;}
+    else if(ADC_value >= 1.2375 & ADC_value < 1.65) {IO_write = 0x0F;}
+    else if(ADC_value >= 1.65 & ADC_value < 2.0625) {IO_write = 0x1F;}
+    else if(ADC_value >= 2.0625 & ADC_value < 2.475) {IO_write = 0x3F;}
+    else if(ADC_value >= 2.475 & ADC_value < 2.8875) {IO_write = 0x7F;}
+    else if(ADC_value >= 2.8875) {IO_write = 0xFF;}
+    
+    i2c_write1ByteRegister(I2C_MCP23008_SLAVE_ADDR, MCP23008_REG_ADDR_GPIO, IO_write);
+}
+
