@@ -68,6 +68,7 @@ int main(void)
     uint16_t ADC_read = 0;
     uint16_t ADC_right_shift;
     uint16_t DAC_write;
+    uint16_t resolution = 1024;
     uint8_t data_write[3];
     uint8_t data_read[2];
     
@@ -85,7 +86,7 @@ int main(void)
         ADC_right_shift = ADC_read >> 2;
         
         /*Calculate the voltage output from the DAC*/
-        DAC_value = ADC_right_shift * (DAC_Vref/1024);
+        DAC_value = ADC_right_shift * (DAC_Vref/resolution);
         /*Send data to variable streamer*/
         variableWrite_SendFrame(DAC_value);
         
