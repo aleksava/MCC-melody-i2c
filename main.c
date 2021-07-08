@@ -36,7 +36,6 @@ Copyright (c) [2012-2020] Microchip Technology Inc.
 #include "mcc_generated_files/data_streamer/data_streamer.h"
 
 #define I2C_SLAVE_ADDR          0x4D
-#define MCP3221_REG_ADDR        0x00
 
 
 void TC_overflow_cb(void){
@@ -44,9 +43,6 @@ void TC_overflow_cb(void){
     DebugIO_RE2_Toggle();
 }
 
-float ADC_value;
-uint16_t ADC_read;
-float Vdd = 3.3;
 
 int main(void)
 {
@@ -60,14 +56,24 @@ int main(void)
 
     // Enable the Peripheral Interrupts
     INTERRUPT_PeripheralInterruptEnable();
+    
+    //Declear variables
+    float ADC_value;
+    uint16_t ADC_read;
+    uint8_t data[2];
+    float Vdd = 3.3;
+    uint16_t resolution = 4096;
 
     while(1)
     {   
-        /*Read ADC value*/
-        ADC_read = i2c_read2ByteRegister(I2C_SLAVE_ADDR, MCP3221_REG_ADDR);
+        /*Read data from ADC*/
+        i2c_readNBytes(I2C_SLAVE_ADDR, data, 2);
+        
+        /*Make one 16-bit value from the 2 bytes read from ADC*/
+        ADC_read = (uint16_t) ((data[0] << 8) | (data[1] & 0xff));
         
         /*Convert value to float*/
-        ADC_value = ADC_read*(Vdd/4096);
+        ADC_value = ADC_read*(Vdd/resolution);
         
         /*Write to data visualizer*/
         variableWrite_SendFrame(ADC_value);
