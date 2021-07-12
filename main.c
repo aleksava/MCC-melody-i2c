@@ -35,12 +35,14 @@ Copyright (c) [2012-2020] Microchip Technology Inc.
 #include "mcc_generated_files/i2c_host/i2c_simple_host.h"
 #include "mcc_generated_files/data_streamer/data_streamer.h"
 
-#define I2C_SLAVE_ADDR          0x4D
+#define I2C_SLAVE_ADDR          0x4D //7-bit Address
 
+volatile uint8_t TC_flag = 0; 
 
 void TC_overflow_cb(void){
     LED_RE0_Toggle();
     DebugIO_RE2_Toggle();
+    TC_flag = 1;
 }
 
 
@@ -66,19 +68,24 @@ int main(void)
 
     while(1)
     {   
-        /*Read data from ADC*/
-        i2c_readNBytes(I2C_SLAVE_ADDR, data, 2);
-        
-        /*Make one 16-bit value from the 2 bytes read from ADC*/
-        ADC_read = (uint16_t) ((data[0] << 8) | (data[1] & 0xff));
-        
-        /*Convert value to float*/
-        ADC_value = ADC_read*(Vdd/resolution);
-        
-        /*Write to data visualizer*/
-        variableWrite_SendFrame(ADC_value);
-        
-        /*Delay 100ms*/
-        __delay_ms(100);
+        if(TC_flag)
+        {
+            /*Read data from ADC*/
+            i2c_readNBytes(I2C_SLAVE_ADDR, data, 2);
+
+            /*Make one 16-bit value from the 2 bytes read from ADC*/
+            ADC_read = (uint16_t) ((data[0] << 8) | (data[1] & 0xff));
+
+            /*Convert value to float*/
+            ADC_value = ADC_read*(Vdd/resolution);
+
+            /*Write to data visualizer*/
+            variableWrite_SendFrame(ADC_value);
+
+            /*Delay 100ms*/
+            __delay_ms(100);
+            
+            TC_flag = 0;
+        }
     }    
 }
