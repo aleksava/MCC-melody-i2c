@@ -40,15 +40,17 @@ Copyright (c) [2012-2020] Microchip Technology Inc.
 */
 
 
-#define I2C_MCP3221_SLAVE_ADDR              0x4D
-#define I2C_TC1321_SLAVE_ADDR               0x48
+#define I2C_MCP3221_SLAVE_ADDR              0x4D //7-bit Address
+#define I2C_TC1321_SLAVE_ADDR               0x48 //7-bit Address   
 #define TC1321_REG_ADDR                     0x00
 
+volatile uint8_t TC_flag = 0;
 
 void TC_overflow_cb(void){
     
     LED_RE0_Toggle();
     DebugIO_RE2_Toggle();
+    TC_flag = 1;
 }
 
 int main(void)
@@ -75,32 +77,37 @@ int main(void)
     data_write[0] = TC1321_REG_ADDR;
 
     while(1)
-    {   
-        /*Read data from ADC*/
-        i2c_readNBytes(I2C_MCP3221_SLAVE_ADDR, data_read, 2);
-        __delay_ms(10);
-        
-        /*Make one 16-bit value from the 2 bytes read from ADC*/
-        ADC_read = (uint16_t) ((data_read[0] << 8) | (data_read[1] & 0xff));
-        /*Right-shift value by 2, to obtain a 10-bit resolution*/
-        ADC_right_shift = ADC_read >> 2;
-        
-        /*Calculate the voltage output from the DAC*/
-        DAC_value = ADC_right_shift * (DAC_Vref/resolution);
-        /*Send data to variable streamer*/
-        variableWrite_SendFrame(DAC_value);
-        
-        /*Left-shift by 6 - to write the data to the DAC. The datasheet
-         defines how the 10-bit value should be written to the 0x00 register.*/
-        DAC_write = ADC_right_shift << 6;
-        
-        /*Split into 2 single bytes*/
-        data_write[1] = (uint8_t) (DAC_write >> 8);
-        data_write[2] = (uint8_t) (DAC_write & 0xFF);
-        
-        /*Write data to the DATA register (0x00)*/
-        i2c_writeNBytes(I2C_TC1321_SLAVE_ADDR, data_write, 3);
-        __delay_ms(10);
+    {
+        if(TC_flag)
+        {
+            /*Read data from ADC*/
+            i2c_readNBytes(I2C_MCP3221_SLAVE_ADDR, data_read, 2);
+            __delay_ms(10);
+
+            /*Make one 16-bit value from the 2 bytes read from ADC*/
+            ADC_read = (uint16_t) ((data_read[0] << 8) | (data_read[1] & 0xff));
+            /*Right-shift value by 2, to obtain a 10-bit resolution*/
+            ADC_right_shift = ADC_read >> 2;
+
+            /*Calculate the voltage output from the DAC*/
+            DAC_value = ADC_right_shift * (DAC_Vref/resolution);
+            /*Send data to variable streamer*/
+            variableWrite_SendFrame(DAC_value);
+
+            /*Left-shift by 6 - to write the data to the DAC. The datasheet
+             defines how the 10-bit value should be written to the 0x00 register.*/
+            DAC_write = ADC_right_shift << 6;
+
+            /*Split into 2 single bytes*/
+            data_write[1] = (uint8_t) (DAC_write >> 8);
+            data_write[2] = (uint8_t) (DAC_write & 0xFF);
+
+            /*Write data to the DATA register (0x00)*/
+            i2c_writeNBytes(I2C_TC1321_SLAVE_ADDR, data_write, 3);
+            __delay_ms(10);
+            
+            TC_flag = 0;
+        }
     }    
     
 }
