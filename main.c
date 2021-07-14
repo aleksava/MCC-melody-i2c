@@ -35,7 +35,7 @@ Copyright (c) [2012-2020] Microchip Technology Inc.
 #include "mcc_generated_files/i2c_host/i2c_simple_host.h"
 #include "mcc_generated_files/data_streamer/data_streamer.h"
 
-#define I2C_CLIENT_ADDR          0x4D //7-bit Address
+#define I2C_CLIENT_ADDR          0x4D /*7-bit Address*/
 
 volatile uint8_t TC_flag = 0; 
 
@@ -48,20 +48,20 @@ void TC_overflow_cb(void){
 
 int main(void)
 {
-    // Initialize the device
+    /* Initialize the device */
     SYSTEM_Initialize();
     
     Timer0.TimeoutCallbackRegister(TC_overflow_cb);
 
-    // Enable the Global Interrupts
+    /* Enable the Global Interrupts */
     INTERRUPT_GlobalInterruptEnable();
 
-    // Enable the Peripheral Interrupts
+    /* Enable the Peripheral Interrupts */
     INTERRUPT_PeripheralInterruptEnable();
     
-    //Declear variables
-    float ADCValue;
-    uint16_t ADCRead;
+    /*Declear variables */
+    float ADCVoltage;
+    uint16_t rawADCValue;
     uint8_t data[2];
     float Vdd = 3.3;
     uint16_t resolution = 4096;
@@ -74,13 +74,13 @@ int main(void)
             i2c_readNBytes(I2C_CLIENT_ADDR, data, 2);
 
             /*Make one 16-bit value from the 2 bytes read from ADC*/
-            ADCRead = (uint16_t) ((data[0] << 8) | (data[1] & 0xff));
+            rawADCValue = (uint16_t) ((data[0] << 8) | (data[1] & 0xff));
 
             /*Convert value to float*/
-            ADCValue = ADCRead*(Vdd/resolution);
+            ADCVoltage = rawADCValue*(Vdd/resolution);
 
             /*Write to data visualizer*/
-            variableWrite_SendFrame(ADCValue);
+            variableWrite_SendFrame(ADCVoltage);
 
             /*Delay 100ms*/
             __delay_ms(100);
