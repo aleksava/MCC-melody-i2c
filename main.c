@@ -35,7 +35,7 @@ Copyright (c) [2012-2020] Microchip Technology Inc.
 #include "mcc_generated_files/i2c_host/i2c_simple_host.h"
 #include "mcc_generated_files/data_streamer/data_streamer.h"
 
-#define I2C_SLAVE_ADDR          0x4D //7-bit Address
+#define I2C_CLIENT_ADDR          0x4D //7-bit Address
 
 volatile uint8_t TC_flag = 0; 
 
@@ -71,7 +71,7 @@ int main(void)
         if(TC_flag)
         {
             /*Read data from ADC*/
-            i2c_readNBytes(I2C_SLAVE_ADDR, data, 2);
+            i2c_readNBytes(I2C_CLIENT_ADDR, data, 2);
 
             /*Make one 16-bit value from the 2 bytes read from ADC*/
             ADCRead = (uint16_t) ((data[0] << 8) | (data[1] & 0xff));
