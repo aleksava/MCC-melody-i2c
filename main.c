@@ -109,7 +109,7 @@ int main(void)
  *Then writes the corresponding value to the I/O expander.
  */
 uint8_t mapADCToGPIO(uint16_t rawADCValue){
-    uint16_t interval = 512;
+    uint16_t interval = 512; /*4096/8 = 512*/
     uint16_t i = rawADCValue/interval;
     if (i > 8) i = 8;
     switch(i)
@@ -119,8 +119,8 @@ uint8_t mapADCToGPIO(uint16_t rawADCValue){
         case 2: return 0x07; /*0.825V*/
         case 3: return 0x0F; /*1.2375*/
         case 4: return 0x1F; /*1.65V*/
-        case 5: return 0x3F; /*2.0625*/
-        case 6: return 0x7F; /*2.475*/
-        case 7: return 0xFF; /*2.8875*/           
+        case 5: return 0x3F; /*2.0625V*/
+        case 6: return 0x7F; /*2.475V*/
+        case 7: return 0xFF; /*2.8875V*/           
     }
 }
