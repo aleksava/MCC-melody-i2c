@@ -43,7 +43,7 @@ Copyright (c) [2012-2020] Microchip Technology Inc.
 
 volatile uint8_t TC_flag = 0; 
 
-void mapADCToGPIO(uint16_t rawADCValue);
+uint8_t mapADCToGPIO(uint16_t rawADCValue);
 
 void TC_overflow_cb(void){
     LED_RE0_Toggle();
@@ -67,7 +67,8 @@ int main(void)
     /* Declear variables */
     float ADCVoltage;
     uint16_t rawADCValue;
-    uint8_t data[2];
+    uint8_t dataRead[2];
+    uint8_t dataWrite[2];
     float Vdd = 3.3;
     uint16_t resolution = 4096;
     
@@ -79,14 +80,16 @@ int main(void)
         if(TC_flag)
         {
             /*Read data from ADC*/
-            i2c_readNBytes(I2C_MCP3221_CLIENT_ADDR, data, 2);
+            i2c_readNBytes(I2C_MCP3221_CLIENT_ADDR, dataRead, 2);
 
             /*Make one 16-bit value from the 2 bytes read from ADC*/
-            rawADCValue = (uint16_t) ((data[0] << 8) | (data[1] & 0xff));
+            rawADCValue = (uint16_t) ((dataRead[0] << 8) | (dataRead[1] & 0xff));
             
             /*Write to I/O Expander based on raw ADC voltage value*/
-            mapADCToGPIO(rawADCValue);
-
+            dataWrite[0] = MCP23008_REG_ADDR_GPIO;
+            dataWrite[1] = mapADCToGPIO(rawADCValue);
+            i2c_writeNBytes(I2C_MCP23008_CLIENT_ADDR, dataWrite, 2);
+            
             /*Convert value to float*/
             ADCVoltage = rawADCValue*(Vdd/resolution);
 
@@ -105,30 +108,19 @@ int main(void)
  *Decided how many LEDs should be turned on based on the raw voltage value of read from the ADC.
  *Then writes the corresponding value to the I/O expander.
  */
-void mapADCToGPIO(uint16_t rawADCValue){
-    uint8_t IOwrite;
+uint8_t mapADCToGPIO(uint16_t rawADCValue){
     uint16_t interval = 512;
-    uint8_t i = rawADCValue/interval;
+    uint16_t i = rawADCValue/interval;
     if (i > 8) i = 8;
     switch(i)
     {
-        case 0: IOwrite = 0x01; /*0V*/
-                break;
-        case 1: IOwrite = 0x03; /*0.4125V*/
-                break;
-        case 2: IOwrite = 0x07; /*0.825V*/
-                break;
-        case 3: IOwrite = 0x0F; /*1.2375*/
-                break;
-        case 4: IOwrite = 0x1F; /*1.65V*/
-                break;
-        case 5: IOwrite = 0x3F; /*2.0625*/
-                break;
-        case 6: IOwrite = 0x7F; /*2.475*/
-                break;
-        case 7: IOwrite = 0xFF; /*2.8875*/
-                break;
+        case 0: return 0x01; /*0V*/
+        case 1: return 0x03; /*0.4125V*/
+        case 2: return 0x07; /*0.825V*/
+        case 3: return 0x0F; /*1.2375*/
+        case 4: return 0x1F; /*1.65V*/
+        case 5: return 0x3F; /*2.0625*/
+        case 6: return 0x7F; /*2.475*/
+        case 7: return 0xFF; /*2.8875*/           
     }
-    
-    i2c_write1ByteRegister(I2C_MCP23008_CLIENT_ADDR, MCP23008_REG_ADDR_GPIO, IOwrite);
 }
