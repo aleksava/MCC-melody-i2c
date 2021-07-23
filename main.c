@@ -95,9 +95,6 @@ int main(void)
 
             /*Write to data visualizer*/
             variableWrite_SendFrame(ADCVoltage);
-
-            /*Delay 10ms*/
-            __delay_ms(10);
             
             TC_flag = 0;
         }
