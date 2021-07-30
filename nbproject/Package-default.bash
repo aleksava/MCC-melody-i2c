@@ -10,9 +10,9 @@ CND_CONF=default
 CND_DISTDIR=dist
 TMPDIR=build/${CND_CONF}/${IMAGE_TYPE}/tmp-packaging
 TMPDIRNAME=tmp-packaging
-OUTPUT_PATH=dist/${CND_CONF}/${IMAGE_TYPE}/MCC-Melody-DataStreamer.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
-OUTPUT_BASENAME=MCC-Melody-DataStreamer.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
-PACKAGE_TOP_DIR=mcc-melody-datastreamer/
+OUTPUT_PATH=dist/${CND_CONF}/${IMAGE_TYPE}/MCC-melody-i2c.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
+OUTPUT_BASENAME=MCC-melody-i2c.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
+PACKAGE_TOP_DIR=mcc-melody-i2c/
 
 # Functions
 function checkReturnCode
@@ -57,15 +57,15 @@ mkdir -p ${TMPDIR}
 
 # Copy files and create directories and links
 cd "${TOP}"
-makeDirectory ${TMPDIR}/mcc-melody-datastreamer/bin
+makeDirectory ${TMPDIR}/mcc-melody-i2c/bin
 copyFileToTmpDir "${OUTPUT_PATH}" "${TMPDIR}/${PACKAGE_TOP_DIR}bin/${OUTPUT_BASENAME}" 0755
 
 
 # Generate tar file
 cd "${TOP}"
-rm -f ${CND_DISTDIR}/${CND_CONF}/package/mcc-melody-datastreamer.tar
+rm -f ${CND_DISTDIR}/${CND_CONF}/package/mcc-melody-i2c.tar
 cd ${TMPDIR}
-tar -vcf ../../../../${CND_DISTDIR}/${CND_CONF}/package/mcc-melody-datastreamer.tar *
+tar -vcf ../../../../${CND_DISTDIR}/${CND_CONF}/package/mcc-melody-i2c.tar *
 checkReturnCode
 
 # Cleanup

@@ -50,8 +50,8 @@ void PIN_MANAGER_Initialize(void)
     LATx registers
     */
     LATA = 0x0;
-    LATB = 0x0;
-    LATC = 0x18;
+    LATB = 0x6;
+    LATC = 0x0;
     LATD = 0x0;
     LATE = 0x0;
 
@@ -68,8 +68,8 @@ void PIN_MANAGER_Initialize(void)
     ANSELx registers
     */
     ANSELA = 0xFF;
-    ANSELB = 0xBF;
-    ANSELC = 0xE7;
+    ANSELB = 0xB9;
+    ANSELC = 0xFF;
     ANSELD = 0xFF;
     ANSELE = 0x2;
 
@@ -114,10 +114,10 @@ void PIN_MANAGER_Initialize(void)
     T0CKIPPS = 0x4; //RA4->TMR0:T0CKI;
     RX2PPS = 0x19; //RD1->EUSART2:RX2;
     RD0PPS = 0x0B;  //RD0->EUSART2:TX2;
-    SSP1CLKPPS = 0x13;  //RC3->MSSP1:SSP1CLK;
-    RC3PPS = 0x0F;  //RC3->MSSP1:SSP1CLK;
-    SSP1DATPPS = 0x14;  //RC4->MSSP1:SSP1DAT;
-    RC4PPS = 0x10;  //RC4->MSSP1:SSP1DAT;
+    SSP1CLKPPS = 0x9;  //RB1->MSSP1:SSP1CLK;
+    RB1PPS = 0x0F;  //RB1->MSSP1:SSP1CLK;
+    SSP1DATPPS = 0xA;  //RB2->MSSP1:SSP1DAT;
+    RB2PPS = 0x10;  //RB2->MSSP1:SSP1DAT;
 
    /**
     IOCx registers 
