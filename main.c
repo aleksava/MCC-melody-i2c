@@ -205,6 +205,9 @@ static uint8_t i2c_writeNBytesEEPROM(i2c1_address_t address, uint8_t memoryAddre
 
     while(pageCounter <= pageEnd)
     {
+        /* ACK polling to wait for page write buffer */
+        while (I2C_ACK_POLL(address));
+        
         /* Loading the desired data onto the buffer */
         for (uint8_t i = 0; i < dataPerIteration; i++)
         {
@@ -217,10 +220,7 @@ static uint8_t i2c_writeNBytesEEPROM(i2c1_address_t address, uint8_t memoryAddre
         dataLength -= dataPerIteration;
         dataBuffer[0] += dataPerIteration;
         dataPerIteration = MIN(EEPROMPagesize,dataLength); 
-        pageCounter++;
-       
-        /* ACK polling to wait for page write buffer */
-        while (I2C_ACK_POLL(address));
+        pageCounter++;      
     }  
     return dataBuffer[0];
 }

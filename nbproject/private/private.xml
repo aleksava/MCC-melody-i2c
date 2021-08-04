@@ -2,12 +2,6 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group>
-            <file>file:/C:/Users/M63376/MPLABXProjects/MCC-Melody-DataStreamer/mcc_generated_files/i2c_host/i2c_simple_host.h</file>
-            <file>file:/C:/Users/M63376/MPLABXProjects/MCC-Melody-DataStreamer/main.c</file>
-            <file>file:/C:/Users/M63376/MPLABXProjects/MCC-Melody-DataStreamer/mcc_generated_files/data_streamer/data_streamer.h</file>
-            <file>file:/C:/Users/M63376/MPLABXProjects/MCC-Melody-DataStreamer/mcc_generated_files/system/pins.h</file>
-            <file>file:/C:/Users/M63376/MPLABXProjects/MCC-Melody-DataStreamer/mcc_generated_files/data_streamer/src/data_streamer.c</file>
-        </group>
+        <group/>
     </open-files>
 </project-private>
