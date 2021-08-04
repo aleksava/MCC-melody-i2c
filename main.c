@@ -122,7 +122,6 @@ int main(void)
         if(TC_flag % 10 == 0)
         {
             i2c_readNBytes(I2C_TEMP_CLIENT_ADR, dataRead, 2);
-            //i2c_readDataBlock(I2C_TEMP_CLIENT_ADR,I2C_TEMP_READ_REG, dataRead, 2);
             /*Calculate the temperature in celsius*/
             rawTempData = (dataRead[0] << 4) + (dataRead[1] >> 4);
             celciusTemp = (float) (rawTempData / 16.0);
